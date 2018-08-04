@@ -1,7 +1,8 @@
+const path = require('path');
 module.exports = {
   entry: './main.js',
   output: {
-    path: './build/',
+    path:   path.resolve(__dirname, 'build'),
     filename: 'index.js'
   },
   devServer:{
@@ -9,15 +10,14 @@ module.exports = {
     port:3333
   },
   module:{
-      loaders:[
-          {test: /\.jsx?$/, exclude: /node_modules/, loader: 'babel'},
-          {
-              test: /\.s?css$/,
-              loaders: [
-                  'style?sourceMap',
-                  'typings-for-css-modules?modules&importLoaders=1&localIdentName=[local]__[hash:base64:5]&namedExport&camelCase',
-              ],
-          },
-      ]
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader"
+        }
+      }
+    ]
   }
 };

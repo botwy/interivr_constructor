@@ -11,25 +11,27 @@
   "author": "Goncharov Denis",
   "license": "MIT",
   "dependencies": {
-    "react": "*",
-    "react-dom": "*",
     "konva": "*",
+    "react": "^16.4.1",
     "react-dnd": "*",
     "react-dnd-html5-backend": "*",
-    "react-konva": "*"
+    "react-dom": "^16.4.1",
+    "react-konva": "^1.7.12"
   },
   "devDependencies": {
-    "autoprefixer-loader": "*",
     "babel-core": "*",
     "babel-loader": "*",
     "babel-preset-env": "*",
-    "babel-preset-stage-0": "*",
     "babel-preset-react": "*",
+    "babel-preset-stage-0": "*",
     "css-loader": "*",
     "file-loader": "*",
     "json-loader": "*",
+    "postcss-loader": "*",
     "style-loader": "*",
     "url-loader": "*",
-    "webpack": "*"
+    "webpack": "^4.16.4",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.5"
   }
 }
