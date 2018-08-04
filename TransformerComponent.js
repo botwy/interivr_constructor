@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Layer, Rect, Stage, Group, Line, Circle, Transformer} from 'react-konva';
 
-class TransformerComponent extends React.Component {
+export class TransformerComponent extends Component {
     componentDidMount() {
         this.checkNode();
     }

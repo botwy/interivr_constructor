@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Layer, Rect, Stage, Group, Line, Circle, Transformer} from 'react-konva';
 
-export class Rectangle extends React.Component {
+export class Rectangle extends Component {
     handleChange = e => {
         const shape = e.target;
         // take a look into width and height properties

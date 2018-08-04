@@ -2,12 +2,11 @@ import React, {Component} from 'react';
 import { render } from 'react-dom';
 import {Layer, Rect, Stage, Group, Line, Circle} from 'react-konva';
 import {Rectangle} from './Rectangle';
+import {TransformerComponent} from './TransformerComponent';
 
 class AppKonva extends Component {
 
-    constructor(){
-        super();
-        this.state = {
+        state = {
             rectangles: [
                 {
                     x: 10,
@@ -28,9 +27,8 @@ class AppKonva extends Component {
             ],
             selectedShapeName: ''
         };
-    }
 
-    handleStageMouseDown(e) {
+    handleStageMouseDown = (e) => {
         // clicked on stage - cler selection
         if (e.target === e.target.getStage()) {
             this.setState({
@@ -58,7 +56,7 @@ class AppKonva extends Component {
             });
         }
     };
-    handleRectChange (index, newProps) {
+    handleRectChange = (index, newProps) => {
         const rectangles = this.state.rectangles.concat();
         rectangles[index] = {
             ...rectangles[index],
