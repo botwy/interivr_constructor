@@ -2,39 +2,42 @@ import React, {Component} from 'react';
 import {Layer, Rect, Stage, Group, Line, Circle, Transformer} from 'react-konva';
 
 export class TransformerComponent extends Component {
-    componentDidMount() {
-        this.checkNode();
-    }
-    componentDidUpdate() {
-        this.checkNode();
-    }
-    checkNode() {
-        // here we need to manually attach or detach Transformer node
-        const stage = this.transformer.getStage();
-        const { selectedShapeName } = this.props;
+  componentDidMount() {
+    this.checkNode();
+  }
 
-        const selectedNode = stage.findOne('.' + selectedShapeName);
-        // do nothing if selected node is already attached
-        if (selectedNode === this.transformer.node()) {
-            return;
-        }
+  componentDidUpdate() {
+    this.checkNode();
+  }
 
-        if (selectedNode) {
-            // attach to another node
-            this.transformer.attachTo(selectedNode);
-        } else {
-            // remove transformer
-            this.transformer.detach();
-        }
-        this.transformer.getLayer().batchDraw();
+  checkNode() {
+    // here we need to manually attach or detach Transformer node
+    const stage = this.transformer.getStage();
+    const {selectedShapeName} = this.props;
+
+    const selectedNode = stage.findOne('.' + selectedShapeName);
+    // do nothing if selected node is already attached
+    if (selectedNode === this.transformer.node()) {
+      return;
     }
-    render() {
-        return (
-            <Transformer
-                ref={node => {
-                    this.transformer = node;
-                }}
-            />
-        );
+
+    if (selectedNode) {
+      // attach to another node
+      this.transformer.attachTo(selectedNode);
+    } else {
+      // remove transformer
+      this.transformer.detach();
     }
+    this.transformer.getLayer().batchDraw();
+  }
+
+  render() {
+    return (
+      <Transformer
+        ref={node => {
+          this.transformer = node;
+        }}
+      />
+    );
+  }
 }

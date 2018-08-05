@@ -4,16 +4,18 @@ import {Layer, Rect, Stage, Group, Line, Circle, Label, Text, Tag} from 'react-k
 import {Rectangle} from './Rectangle';
 import {TransformerComponent} from './TransformerComponent';
 import {rectangleList} from './initialState';
+import {attractToTargetShape, attractRotation} from './utils/geometry2dUtils';
 
 class AppKonva extends Component {
 
   state = {
     rectangles: rectangleList,
+    prevRectangles: rectangleList,
     selectedShapeName: '',
     isLabelVisible: false,
     roomWidth: rectangleList[0].width,
+    roomRectangle: rectangleList[0],
   };
-
 
 
   handleStageMouseDown = (e) => {
@@ -47,13 +49,41 @@ class AppKonva extends Component {
     }
   };
 
-  handleRectDragging = (index, newProps) => {
+  handleRectDragEnd = (index, newProps) => {
     const rectangles = this.state.rectangles.concat();
+    let changingProps = {}
+    if (index !== 0) {
+      changingProps = attractToTargetShape({...rectangles[index], ...newProps}, this.state.roomRectangle);
+    }
     rectangles[index] = {
       ...rectangles[index],
-      ...newProps
+      ...newProps,
+      ...changingProps,
     };
-    this.setState({rectangles});
+    if (index === 0) {
+      this.setState({rectangles, prevRectangles: rectangles, roomRectangle: {...rectangles[index]}});
+      return;
+    }
+    this.setState({rectangles, prevRectangles: rectangles});
+  };
+
+  handleRectTransformChange = (index, newProps) => {
+    const rectangles = this.state.rectangles.concat();
+
+    const changingRotation = attractRotation(newProps, this.state.prevRectangles[index]);
+    if (!changingRotation) {
+      return;
+    }
+    rectangles[index] = {
+      ...rectangles[index],
+      ...newProps,
+      ...changingRotation,
+    };
+    if (index === 0) {
+      this.setState({rectangles, prevRectangles: rectangles, roomRectangle: {...rectangles[index]}});
+      return;
+    }
+    this.setState({rectangles, prevRectangles: rectangles});
   };
 
   handleRectTransforming = (index, newProps) => {
@@ -88,8 +118,8 @@ class AppKonva extends Component {
               width={150}
               height={50}
               fill={'yellow'}
-              pointerDirection = {'down'}
-              pointerWidth = {10}
+              pointerDirection={'down'}
+              pointerWidth={10}
               pointerHeight={10}
               lineJoin={'round'}
               shadowColor={'yellow'}
@@ -98,7 +128,7 @@ class AppKonva extends Component {
               shadowOpacity={0.5}
             />
             <Text
-              text={(this.state.roomWidth||0).toFixed(0)}
+              text={(this.state.roomWidth || 0).toFixed(0)}
             />
           </Label>
           {this.state.rectangles.map((rect, i) => (
@@ -106,10 +136,13 @@ class AppKonva extends Component {
               key={i}
               {...rect}
               onDragEnd={newProps => {
-                this.handleRectDragging(i, newProps);
+                this.handleRectDragEnd(i, newProps);
               }}
               onTransform={newProps => {
                 this.handleRectTransforming(i, newProps);
+              }}
+              onTransformChange={newProps => {
+                this.handleRectTransformChange(i, newProps);
               }}
             />
           ))}
