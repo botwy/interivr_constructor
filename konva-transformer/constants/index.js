@@ -1,0 +1,3 @@
+export const CHANGE_EXECUTE = "CHANGE_EXECUTE";
+export const TRANSFORMING = "TRANSFORMING";
+export const SELECT_SHAPE = "SELECT_SHAPE";

@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
-import {Layer, Rect, Stage, Group, Line, Circle, Transformer} from 'react-konva';
+import {Transformer} from 'react-konva';
+import {connect} from "react-redux";
 
-export class TransformerComponent extends Component {
+class TransformerComponent extends Component {
   componentDidMount() {
     this.checkNode();
   }
@@ -41,3 +42,9 @@ export class TransformerComponent extends Component {
     );
   }
 }
+
+export default connect(
+  (store) => ({
+    selectedShapeName: store.selectedShapeName,
+  }),
+)(TransformerComponent);
