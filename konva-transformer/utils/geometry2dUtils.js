@@ -50,3 +50,27 @@ export const attractRotation = (currentShapeData = {}, previousData) => {
     }
   }
 }
+
+export const distanceFromTargetCorner = (currentShapeData = {}, targetShapeData = {}) => {
+  const {x, y, width, rotation = 0} = currentShapeData;
+  const {x: targetX, y: targetY, width: targetWidth, height: targetHeight, strokeWidth} = targetShapeData;
+  const realTargetY = targetY - strokeWidth / 2;
+  const realTargetX = targetX + strokeWidth / 2;
+
+  if (rotation === 0 && (y === realTargetY || y === realTargetY + targetHeight)) {
+    return {
+      leftDistance: (x - realTargetX).toFixed(0),
+      rightDistance: (realTargetX + targetWidth - strokeWidth - (x + width)).toFixed(0),
+      locationForLabel: y === realTargetY ? "top" : "bottom",
+    }
+  }
+
+  if (rotation === 90 && (x === realTargetX || x === realTargetX + targetWidth)) {
+    return {
+      leftDistance: (y - realTargetY - strokeWidth).toFixed(0),
+      rightDistance: (realTargetY + targetHeight - (y + width)).toFixed(0),
+      locationForLabel: x === realTargetX ? "left" : "right",
+    }
+  }
+
+}

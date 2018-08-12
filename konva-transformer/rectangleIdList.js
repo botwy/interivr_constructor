@@ -1,8 +1,5 @@
 export const rectangleIdList = [
   {
-    rectangleId: 'room'
-  },
-  {
     rectangleId: 'window1'
   },
   {

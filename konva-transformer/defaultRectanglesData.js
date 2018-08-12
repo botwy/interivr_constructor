@@ -1,7 +1,7 @@
 export const rectanglesData = {
 room: {
   x: 200,
-    y: 80,
+  y: 80,
   width: 300,
   height: 300,
   strokeColor: "blue",
@@ -10,7 +10,7 @@ room: {
 },
 window1: {
   x: 10,
-    y: 50,
+  y: 50,
   width: 150,
   height: 20,
   fill: 'green',
@@ -26,7 +26,7 @@ window2: {
 },
 door1: {
   x: 10,
-    y: 150,
+  y: 150,
   width: 90,
   height: 20,
   fill: 'red',

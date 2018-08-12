@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Layer, Stage} from 'react-konva';
 import Rectangle from './component/Rectangle';
+import RoomRectangle from './component/RoomRectangle';
 import TransformerComponent from './component/TransformerComponent';
 import {rectangleIdList} from './rectangleIdList';
-import LabelForRoomWidth from './component/LabelForRoomWidth';
 import {selectShapeActionCreator} from "./action";
 
 class AppKonva extends Component {
@@ -37,14 +37,15 @@ class AppKonva extends Component {
       >
         <Layer>
 
-          <LabelForRoomWidth/>
+          <RoomRectangle/>
 
           {rectangleIdList.map((rect, i) => (
             <Rectangle
               key={i}
               rectangleId={rect.rectangleId}
             />
-          ))}
+          ))
+          }
 
           <TransformerComponent />
 
@@ -55,8 +56,10 @@ class AppKonva extends Component {
 }
 
 export default connect(
-  undefined,
+  store => ({
+    selectedShapeName: store.selectedShapeName,
+  }),
   dispatch => ({
-    selectShape: (shapeName) => dispatch(selectShapeActionCreator(shapeName))
+    selectShape: (shapeName) => dispatch(selectShapeActionCreator(shapeName)),
   })
 )(AppKonva);

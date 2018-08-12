@@ -2,19 +2,15 @@ import React from 'react';
 import {Label, Text, Tag} from 'react-konva';
 import {connect} from 'react-redux';
 
-const LabelForRoomWidth = ({isVisible, roomWidth}) => (
+const LabelForDistance = ({x, y, direction, isVisible, value}) => (
   <Label
-    x={350}
-    y={50}
-    width={150}
-    height={50}
-    visible={isVisible}
+    x={x}
+    y={y}
+    visible={!!isVisible}
   >
     <Tag
-      width={150}
-      height={50}
       fill={'yellow'}
-      pointerDirection={'down'}
+      pointerDirection={direction}
       pointerWidth={10}
       pointerHeight={10}
       lineJoin={'round'}
@@ -24,14 +20,14 @@ const LabelForRoomWidth = ({isVisible, roomWidth}) => (
       shadowOpacity={0.5}
     />
     <Text
-      text={(roomWidth || 0).toFixed(0)}
+      text={value}
     />
   </Label>
 )
 
 export default connect(
-  store => ({
-    isVisible: store.isLabelVisible,
-    roomWidth: (store.rectanglesData.room||{}).width,
+  (store, {labelGroup, field}) => ({
+    isVisible: (store.label[labelGroup]||{}).isLabelVisible,
+    value: (store.label[labelGroup]||{})[field],
   })
-)(LabelForRoomWidth)
+)(LabelForDistance)
