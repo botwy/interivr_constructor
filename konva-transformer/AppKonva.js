@@ -5,7 +5,7 @@ import Rectangle from './component/Rectangle';
 import RoomRectangle from './component/RoomRectangle';
 import TransformerComponent from './component/TransformerComponent';
 import {rectangleIdList} from './rectangleIdList';
-import {selectShapeActionCreator} from "./action";
+import {selectShapeActionCreator, createRoom} from "./action";
 
 class AppKonva extends Component {
 
@@ -24,33 +24,40 @@ class AppKonva extends Component {
     }
 
     // find clicked rect by its name
-   const name = e.target.name();
-   this.props.selectShape(name);
+    const name = e.target.name();
+    this.props.selectShape(name);
   };
 
   render() {
     return (
-      <Stage
-        width={window.innerWidth}
-        height={window.innerHeight}
-        onMouseDown={this.handleStageMouseDown}
-      >
-        <Layer>
+      <div>
+        <div>
+          <input
+          />
+          <button onClick={this.props.createRoom}>Создать комнату</button>
+        </div>
+        <Stage
+          width={window.innerWidth}
+          height={window.innerHeight}
+          onMouseDown={this.handleStageMouseDown}
+        >
+          <Layer>
 
-          <RoomRectangle/>
+            <RoomRectangle/>
 
-          {rectangleIdList.map((rect, i) => (
-            <Rectangle
-              key={i}
-              rectangleId={rect.rectangleId}
-            />
-          ))
-          }
+            {rectangleIdList.map((rect, i) => (
+              <Rectangle
+                key={i}
+                rectangleId={rect.rectangleId}
+              />
+            ))
+            }
 
-          <TransformerComponent />
+            <TransformerComponent/>
 
-        </Layer>
-      </Stage>
+          </Layer>
+        </Stage>
+      </div>
     );
   }
 }
@@ -61,5 +68,6 @@ export default connect(
   }),
   dispatch => ({
     selectShape: (shapeName) => dispatch(selectShapeActionCreator(shapeName)),
+    createRoom: () => dispatch(createRoom()),
   })
 )(AppKonva);

@@ -11,6 +11,7 @@
   "author": "Goncharov Denis",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.18.0",
     "konva": "^2.1.8",
     "react": "^16.4.2",
     "react-dnd": "^5.0.0",

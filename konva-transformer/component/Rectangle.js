@@ -36,7 +36,6 @@ class Rectangle extends Component {
     const changedData = {x: shape.x(), y: shape.y()}
 
     this.props.changeRectangleDataExecute(rectangleData, changedData);
-    this.props.updateDistanceLabel(rectangleData,changedData);
   };
 
   handleRectTransforming = (e) => {
