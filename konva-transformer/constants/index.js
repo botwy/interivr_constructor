@@ -1,4 +1,5 @@
 export const CHANGE_EXECUTE = "CHANGE_EXECUTE";
+export const CHANGE_ROOM_Z = "CHANGE_ROOM_Z";
 export const TRANSFORMING = "TRANSFORMING";
 export const SELECT_SHAPE = "SELECT_SHAPE";
 export const SHOW_SHAPE_LABEL = "SHOW_SHAPE_LABEL";

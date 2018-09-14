@@ -5,6 +5,7 @@ import {
   SHOW_SHAPE_LABEL,
   HIDE_SHAPE_LABEL,
   TRANSFORMING,
+  CHANGE_ROOM_Z,
 } from "../constants";
 
 const defaultState = {
@@ -12,6 +13,7 @@ const defaultState = {
   prevRectanglesData: rectanglesData || {},
   selectedShapeName: '',
   label: {},
+  roomZ: 2750,
 }
 
 const reducer = (state = defaultState, action) => {
@@ -93,6 +95,12 @@ const reducer = (state = defaultState, action) => {
           selectedShapeName: action.shapeName,
           label: {},
         }
+      }
+
+    case CHANGE_ROOM_Z:
+      return {
+        ...state,
+        roomZ: action.z,
       }
 
     default:

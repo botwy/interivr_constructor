@@ -3,9 +3,10 @@ import {
   TRANSFORMING,
   SELECT_SHAPE,
   SHOW_SHAPE_LABEL,
-  HIDE_SHAPE_LABEL,
+  HIDE_SHAPE_LABEL, CHANGE_ROOM_Z,
 } from "../constants";
 import axios from "axios";
+import {createCubeInObjFormat} from "../utils/create3dModelUtils";
 
 import {attractRotation, attractToTargetShape, distanceFromTargetCorner} from "../utils/geometry2dUtils";
 
@@ -28,6 +29,11 @@ export const selectShapeActionCreator = (shapeName) => ({
     shapeName,
   }
 )
+
+export const changeRoomZ = (z) => ({
+  type: CHANGE_ROOM_Z,
+  z,
+})
 
 export const updateLabelByNewData = (rectangleData, changedData) => (dispatch, getState) => {
   const roomData = (getState().rectanglesData||{}).room;
@@ -59,62 +65,14 @@ export const updateRectangleByNewData = (rectangleData, changedData, rectangleId
 
 export const createRoom = () => (dispatch, getState) => {
   const roomData = (getState().rectanglesData||{}).room;
+  const roomZ = getState().roomZ;
 
-  const cubeVertices = [
-    [1,1,0],
-    [1,-1,0],
-    [-1,-1,0],
-    [-1,1,0],
-    [1,1,2],
-    [1,-1,2],
-    [-1,-1,2],
-    [-1,1,2],
-  ];
-  const cubeFacesAndNormals = [
-    {f:[1,2,3,4],vn:[0,0,-1]},
-    {f:[5,8,7,6],vn:[0,0,1]},
-    {f:[1,5,6,2],vn:[1,0,0]},
-    {f:[2,6,7,3],vn:[0,-1,0]},
-    {f:[3,7,8,4],vn:[-1,0,0]},
-    {f:[5,1,4,8],vn:[0,1,0]},
-  ];
-  const z = 300;
-  const height = roomData.height;
-  const width = roomData.width;
+  const z = roomZ/100;
+  const height = roomData.height/100;
+  const width = roomData.width/100;
 
-  const obj3D = [];
-  obj3D.push("mtllib cube3x3.mtl");
-  obj3D.push("o Cube");
+  const obj3D = createCubeInObjFormat(width, height, z);
 
-  cubeVertices.forEach((vertice, index) => {
-    const scaleVertice = vertice.map((dimension, index) => {
-      if (index === 0) {
-        return dimension*width/200;
-      }
-      if (index === 1) {
-        return dimension*height/200;
-      }
-      if (index === 2) {
-        return dimension*z/200;
-      }
-    });
-    const newVerticeObjStr = ["v",...scaleVertice].join(" ").trim();
-    obj3D.push(newVerticeObjStr);
-  })
-
-  cubeFacesAndNormals.forEach(faceAndNormalObj => {
-    obj3D.push(["vn", ...faceAndNormalObj.vn].join(" ").trim());
-  })
-
-  obj3D.push("usemtl Material");
-  obj3D.push("s off");
-
-  cubeFacesAndNormals.forEach((faceAndNormalObj,faceIndex) => {
-    obj3D.push([
-      "f",
-      ...faceAndNormalObj.f.map((f) => f + "//" + (faceIndex+1))
-    ].join(" ").trim());
-  })
 
   const requestBody = JSON.stringify(obj3D);
   dispatch({type: "CREATE_ROOM_REQUEST"});

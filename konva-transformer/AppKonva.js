@@ -5,7 +5,7 @@ import Rectangle from './component/Rectangle';
 import RoomRectangle from './component/RoomRectangle';
 import TransformerComponent from './component/TransformerComponent';
 import {rectangleIdList} from './rectangleIdList';
-import {selectShapeActionCreator, createRoom} from "./action";
+import {selectShapeActionCreator, createRoom, changeRoomZ} from "./action";
 
 class AppKonva extends Component {
 
@@ -33,6 +33,8 @@ class AppKonva extends Component {
       <div>
         <div>
           <input
+            value={this.props.roomZ}
+            onChange={this.props.changeRoomZ}
           />
           <button onClick={this.props.createRoom}>Создать комнату</button>
         </div>
@@ -65,9 +67,11 @@ class AppKonva extends Component {
 export default connect(
   store => ({
     selectedShapeName: store.selectedShapeName,
+    roomZ: store.roomZ,
   }),
   dispatch => ({
     selectShape: (shapeName) => dispatch(selectShapeActionCreator(shapeName)),
     createRoom: () => dispatch(createRoom()),
+    changeRoomZ: (e) => dispatch(changeRoomZ(e.target.value)),
   })
 )(AppKonva);
