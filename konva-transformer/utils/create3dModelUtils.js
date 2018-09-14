@@ -40,10 +40,42 @@ const getVerticeObjFormatLine = (faceVertice, {scaleX, scaleY, scaleZ}) => {
   return ["v",...scaleVerticeVector].join(" ").trim();
 
 }
+
+const b = (totalObj3dList, scaleObj) => {
+
+  let verticeGlobalIndex = 0;
+
+  const obj3D = [];
+  obj3D.push("cube.mtl");
+  totalObj3dList.forEach(({ object3dFaceList, normal }, index) => {
+    const faceVerticesIndexList = [];
+
+    obj3D.push("o Cube." + (index+1));
+
+    object3dFaceList.forEach(faceVertices => {
+      obj3D.push(getVerticeObjFormatLine(faceVertices, scaleObj));
+      verticeGlobalIndex++;
+      faceVerticesIndexList.push(verticeGlobalIndex);
+    })
+
+    obj3D.push(["vn", ...normal].join(" ").trim());
+    obj3D.push("usemtl Material."+(index+1));
+    obj3D.push("s off");
+
+    object3dFaceList.forEach((faceVertices, faceListIndex) => {
+      obj3D.push([
+        "f",
+        ...[0,1,2,3].map(step => faceVerticesIndexList[faceListIndex+step]).map((verticeIndex) => verticeIndex + "//" + (faceIndex+1))
+      ].join(" ").trim());
+    })
+  })
+
+}
+
 export const createCubeInObjFormat = (scaleX, scaleY, scaleZ, rectanglesData) => {
   const scaleObj = { scaleX, scaleY, scaleZ };
   const obj3D = [];
-
+ const totalObj3dList = [];
   obj3D.push("cube.mtl");
 
   let verticeGlobalIndex = 0;
@@ -65,6 +97,18 @@ export const createCubeInObjFormat = (scaleX, scaleY, scaleZ, rectanglesData) =>
         const secondVerticeY = 1 - (renderDoor.y + renderDoor.width - room.y)/150;
         const firstVerticeZ = 200/150;
         const facesObjList = [];
+        const object3dFaceList = [];
+        object3dFaceList.push( [
+          [1,firstVerticeY,0], [1,firstVerticeY,2], faceVerticeArr[2], faceVerticeArr[3]
+        ] )
+        object3dFaceList.push(
+          [ [1,secondVerticeY,firstVerticeZ], [1,secondVerticeY,2], [1,firstVerticeY,2], [1,firstVerticeY,firstVerticeZ]
+          ] )
+        object3dFaceList.push(
+          [ faceVerticeArr[0], faceVerticeArr[0], [1,secondVerticeY,2], [1,secondVerticeY,0]
+          ] )
+        totalObj3dList.push({object3dFaceList, normal: cubeFaceData.vn});
+
         obj3D.push(getVerticeObjFormatLine([1,firstVerticeY,0], scaleObj));
         verticeGlobalIndex++;
         faceVerticesIndexList.push(verticeGlobalIndex);
@@ -75,21 +119,6 @@ export const createCubeInObjFormat = (scaleX, scaleY, scaleZ, rectanglesData) =>
         verticeGlobalIndex++;
         faceVerticesIndexList.push(verticeGlobalIndex);
         obj3D.push(getVerticeObjFormatLine(faceVerticeArr[3], scaleObj));
-        verticeGlobalIndex++;
-        faceVerticesIndexList.push(verticeGlobalIndex);
-        facesObjList.push({faceVerticesIndexList})
-        faceVerticesIndexList = [];
-
-        obj3D.push(getVerticeObjFormatLine([1,secondVerticeY,0], scaleObj));
-        verticeGlobalIndex++;
-        faceVerticesIndexList.push(verticeGlobalIndex);
-        obj3D.push(getVerticeObjFormatLine([1,secondVerticeY,firstVerticeZ], scaleObj));
-        verticeGlobalIndex++;
-        faceVerticesIndexList.push(verticeGlobalIndex);
-        obj3D.push(getVerticeObjFormatLine([1,firstVerticeY,firstVerticeZ], scaleObj));
-        verticeGlobalIndex++;
-        faceVerticesIndexList.push(verticeGlobalIndex);
-        obj3D.push(getVerticeObjFormatLine([1,firstVerticeY,0], scaleObj));
         verticeGlobalIndex++;
         faceVerticesIndexList.push(verticeGlobalIndex);
         facesObjList.push({faceVerticesIndexList})
@@ -110,10 +139,10 @@ export const createCubeInObjFormat = (scaleX, scaleY, scaleZ, rectanglesData) =>
         facesObjList.push({faceVerticesIndexList})
         faceVerticesIndexList = [];
 
-        obj3D.push(getVerticeObjFormatLine([1,faceVerticeArr[0],0], scaleObj));
+        obj3D.push(getVerticeObjFormatLine(faceVerticeArr[0], scaleObj));
         verticeGlobalIndex++;
         faceVerticesIndexList.push(verticeGlobalIndex);
-        obj3D.push(getVerticeObjFormatLine([1,faceVerticeArr[1],2], scaleObj));
+        obj3D.push(getVerticeObjFormatLine(faceVerticeArr[1], scaleObj));
         verticeGlobalIndex++;
         faceVerticesIndexList.push(verticeGlobalIndex);
         obj3D.push(getVerticeObjFormatLine([1,secondVerticeY,2], scaleObj));

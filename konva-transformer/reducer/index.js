@@ -13,7 +13,7 @@ const defaultState = {
   prevRectanglesData: rectanglesData || {},
   selectedShapeName: '',
   label: {},
-  roomZ: 2750,
+  roomZ: 275,
 }
 
 const reducer = (state = defaultState, action) => {

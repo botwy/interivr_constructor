@@ -65,13 +65,14 @@ export const updateRectangleByNewData = (rectangleData, changedData, rectangleId
 
 export const createRoom = () => (dispatch, getState) => {
   const roomData = (getState().rectanglesData||{}).room;
+  const rectanglesData = getState().rectanglesData;
   const roomZ = getState().roomZ;
 
   const z = roomZ/100;
   const height = roomData.height/100;
   const width = roomData.width/100;
 
-  const obj3D = createCubeInObjFormat(width, height, z);
+  const obj3D = createCubeInObjFormat(width, height, z, rectanglesData);
 
 
   const requestBody = JSON.stringify(obj3D);
