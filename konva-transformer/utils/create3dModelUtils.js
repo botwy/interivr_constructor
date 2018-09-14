@@ -34,7 +34,14 @@ const getScaleVertice = (verticeVector, scaleX, scaleY, scaleZ) => {
 
 }
 
+const getVerticeObjFormatLine = (faceVertice, {scaleX, scaleY, scaleZ}) => {
+  const scaleVerticeVector = getScaleVertice(faceVertice, scaleX, scaleY, scaleZ);
+
+  return ["v",...scaleVerticeVector].join(" ").trim();
+
+}
 export const createCubeInObjFormat = (scaleX, scaleY, scaleZ, rectanglesData) => {
+  const scaleObj = { scaleX, scaleY, scaleZ };
   const obj3D = [];
 
   obj3D.push("cube.mtl");
@@ -43,27 +50,32 @@ export const createCubeInObjFormat = (scaleX, scaleY, scaleZ, rectanglesData) =>
   cubeFacesScheme.forEach((cubeFaceData, faceIndex) => {
     obj3D.push("o Cube."+(faceIndex+1));
 
+
+    const faceVerticesIndexList = [];
+    const faceVerticeArr = cubeFaceData.f.slice();
+    faceVerticeArr.reverse();
+
     if (faceIndex === 2) {
       const renderDoor = rectanglesData.door1;
       const room = rectanglesData.room;
       const roomX = room.x +room.width +room.strokeWidth/2;
 
       if (roomX === renderDoor.x && renderDoor.y > room.y && renderDoor.y < room.y + room.height) {
-        const firstVerticeX = (renderDoor.y - room.y)/2
+        const firstVerticeY = 1 - (renderDoor.y - room.y)/150;
+        const secondVerticeY = 1 - (renderDoor.y + renderDoor.width - room.y)/150;
+
+        obj3D.push(getVerticeObjFormatLine([1,firstVerticeY,0], scaleObj));
+        obj3D.push(getVerticeObjFormatLine([1,firstVerticeY,2], scaleObj));
+        obj3D.push(getVerticeObjFormatLine(faceVerticeArr[3], scaleObj));
+        obj3D.push(getVerticeObjFormatLine(faceVerticeArr[4], scaleObj));
       }
     }
-    const faceVerticesIndexList = [];
-    const faceVerticeArr = cubeFaceData.f.slice();
 
-    faceVerticeArr.reverse();
     faceVerticeArr.forEach((faceVertice) => {
 
       verticeGlobalIndex++;
       faceVerticesIndexList.push(verticeGlobalIndex);
-      const scaleVerticeVector = getScaleVertice(faceVertice, scaleX, scaleY, scaleZ);
-
-      const newVerticeFormatObjStr = ["v",...scaleVerticeVector].join(" ").trim();
-      obj3D.push(newVerticeFormatObjStr);
+      obj3D.push(getVerticeObjFormatLine(faceVertice, scaleObj));
 
     })
     obj3D.push(["vn", ...cubeFaceData.vn].join(" ").trim());
