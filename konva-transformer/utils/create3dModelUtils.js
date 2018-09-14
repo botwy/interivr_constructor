@@ -51,7 +51,7 @@ export const createCubeInObjFormat = (scaleX, scaleY, scaleZ, rectanglesData) =>
     obj3D.push("o Cube."+(faceIndex+1));
 
 
-    const faceVerticesIndexList = [];
+    let faceVerticesIndexList = [];
     const faceVerticeArr = cubeFaceData.f.slice();
     faceVerticeArr.reverse();
 
@@ -64,26 +64,79 @@ export const createCubeInObjFormat = (scaleX, scaleY, scaleZ, rectanglesData) =>
         const firstVerticeY = 1 - (renderDoor.y - room.y)/150;
         const secondVerticeY = 1 - (renderDoor.y + renderDoor.width - room.y)/150;
         const firstVerticeZ = 200/150;
-
+        const facesObjList = [];
         obj3D.push(getVerticeObjFormatLine([1,firstVerticeY,0], scaleObj));
+        verticeGlobalIndex++;
+        faceVerticesIndexList.push(verticeGlobalIndex);
         obj3D.push(getVerticeObjFormatLine([1,firstVerticeY,2], scaleObj));
+        verticeGlobalIndex++;
+        faceVerticesIndexList.push(verticeGlobalIndex);
         obj3D.push(getVerticeObjFormatLine(faceVerticeArr[2], scaleObj));
+        verticeGlobalIndex++;
+        faceVerticesIndexList.push(verticeGlobalIndex);
         obj3D.push(getVerticeObjFormatLine(faceVerticeArr[3], scaleObj));
+        verticeGlobalIndex++;
+        faceVerticesIndexList.push(verticeGlobalIndex);
+        facesObjList.push({faceVerticesIndexList})
+        faceVerticesIndexList = [];
 
         obj3D.push(getVerticeObjFormatLine([1,secondVerticeY,0], scaleObj));
+        verticeGlobalIndex++;
+        faceVerticesIndexList.push(verticeGlobalIndex);
         obj3D.push(getVerticeObjFormatLine([1,secondVerticeY,firstVerticeZ], scaleObj));
+        verticeGlobalIndex++;
+        faceVerticesIndexList.push(verticeGlobalIndex);
         obj3D.push(getVerticeObjFormatLine([1,firstVerticeY,firstVerticeZ], scaleObj));
+        verticeGlobalIndex++;
+        faceVerticesIndexList.push(verticeGlobalIndex);
         obj3D.push(getVerticeObjFormatLine([1,firstVerticeY,0], scaleObj));
+        verticeGlobalIndex++;
+        faceVerticesIndexList.push(verticeGlobalIndex);
+        facesObjList.push({faceVerticesIndexList})
+        faceVerticesIndexList = [];
 
         obj3D.push(getVerticeObjFormatLine([1,secondVerticeY,firstVerticeZ], scaleObj));
+        verticeGlobalIndex++;
+        faceVerticesIndexList.push(verticeGlobalIndex);
         obj3D.push(getVerticeObjFormatLine([1,secondVerticeY,2], scaleObj));
+        verticeGlobalIndex++;
+        faceVerticesIndexList.push(verticeGlobalIndex);
         obj3D.push(getVerticeObjFormatLine([1,firstVerticeY,2], scaleObj));
+        verticeGlobalIndex++;
+        faceVerticesIndexList.push(verticeGlobalIndex);
         obj3D.push(getVerticeObjFormatLine([1,firstVerticeY,firstVerticeZ], scaleObj));
+        verticeGlobalIndex++;
+        faceVerticesIndexList.push(verticeGlobalIndex);
+        facesObjList.push({faceVerticesIndexList})
+        faceVerticesIndexList = [];
 
         obj3D.push(getVerticeObjFormatLine([1,faceVerticeArr[0],0], scaleObj));
+        verticeGlobalIndex++;
+        faceVerticesIndexList.push(verticeGlobalIndex);
         obj3D.push(getVerticeObjFormatLine([1,faceVerticeArr[1],2], scaleObj));
+        verticeGlobalIndex++;
+        faceVerticesIndexList.push(verticeGlobalIndex);
         obj3D.push(getVerticeObjFormatLine([1,secondVerticeY,2], scaleObj));
+        verticeGlobalIndex++;
+        faceVerticesIndexList.push(verticeGlobalIndex);
         obj3D.push(getVerticeObjFormatLine([1,secondVerticeY,0], scaleObj));
+        verticeGlobalIndex++;
+        faceVerticesIndexList.push(verticeGlobalIndex);
+        facesObjList.push({faceVerticesIndexList})
+        faceVerticesIndexList = [];
+
+        obj3D.push(["vn", ...cubeFaceData.vn].join(" ").trim());
+        obj3D.push("usemtl Material."+(faceIndex+1));
+        obj3D.push("s off");
+
+        facesObjList.forEach(faceObj => {
+          obj3D.push([
+            "f",
+            ...faceObj.faceVerticesIndexList.map((verticeIndex) => verticeIndex + "//" + (faceIndex+1))
+          ].join(" ").trim());
+        })
+
+        return;
       }
     }
 
