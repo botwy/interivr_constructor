@@ -41,7 +41,7 @@ const getVerticeObjFormatLine = (faceVertice, {scaleX, scaleY, scaleZ}) => {
 
 }
 
-const b = (totalObj3dList, scaleObj) => {
+const get3dModelInObjFormat = (totalObj3dList, scaleObj) => {
 
   let verticeGlobalIndex = 0;
 
@@ -53,37 +53,38 @@ const b = (totalObj3dList, scaleObj) => {
     obj3D.push("o Cube." + (index+1));
 
     object3dFaceList.forEach(faceVertices => {
-      obj3D.push(getVerticeObjFormatLine(faceVertices, scaleObj));
-      verticeGlobalIndex++;
-      faceVerticesIndexList.push(verticeGlobalIndex);
+      faceVertices.forEach(vertice => {
+
+        obj3D.push(getVerticeObjFormatLine(vertice, scaleObj));
+        verticeGlobalIndex++;
+        faceVerticesIndexList.push(verticeGlobalIndex);
+
+      })
     })
 
     obj3D.push(["vn", ...normal].join(" ").trim());
     obj3D.push("usemtl Material."+(index+1));
     obj3D.push("s off");
 
-    object3dFaceList.forEach((faceVertices, faceListIndex) => {
+    object3dFaceList.forEach((faceVertices, step) => {
       obj3D.push([
         "f",
-        ...[0,1,2,3].map(step => faceVerticesIndexList[faceListIndex+step]).map((verticeIndex) => verticeIndex + "//" + (faceIndex+1))
+        ...faceVertices
+          .map((vertice, index) => (index))
+          .map(verticeLocalIndex => (faceVerticesIndexList[verticeLocalIndex + step * faceVertices.length]))
+          .map((verticeIndex) => verticeIndex + "//" + (index+1))
       ].join(" ").trim());
     })
   })
-
+ return obj3D;
 }
 
 export const createCubeInObjFormat = (scaleX, scaleY, scaleZ, rectanglesData) => {
   const scaleObj = { scaleX, scaleY, scaleZ };
-  const obj3D = [];
- const totalObj3dList = [];
-  obj3D.push("cube.mtl");
+  const totalObj3dList = [];
 
-  let verticeGlobalIndex = 0;
   cubeFacesScheme.forEach((cubeFaceData, faceIndex) => {
-    obj3D.push("o Cube."+(faceIndex+1));
 
-
-    let faceVerticesIndexList = [];
     const faceVerticeArr = cubeFaceData.f.slice();
     faceVerticeArr.reverse();
 
@@ -96,97 +97,26 @@ export const createCubeInObjFormat = (scaleX, scaleY, scaleZ, rectanglesData) =>
         const firstVerticeY = 1 - (renderDoor.y - room.y)/150;
         const secondVerticeY = 1 - (renderDoor.y + renderDoor.width - room.y)/150;
         const firstVerticeZ = 200/150;
-        const facesObjList = [];
+
         const object3dFaceList = [];
-        object3dFaceList.push( [
+        object3dFaceList.push([
           [1,firstVerticeY,0], [1,firstVerticeY,2], faceVerticeArr[2], faceVerticeArr[3]
         ] )
-        object3dFaceList.push(
-          [ [1,secondVerticeY,firstVerticeZ], [1,secondVerticeY,2], [1,firstVerticeY,2], [1,firstVerticeY,firstVerticeZ]
-          ] )
-        object3dFaceList.push(
-          [ faceVerticeArr[0], faceVerticeArr[0], [1,secondVerticeY,2], [1,secondVerticeY,0]
-          ] )
+        object3dFaceList.push([
+          [1,secondVerticeY,firstVerticeZ], [1,secondVerticeY,2], [1,firstVerticeY,2], [1,firstVerticeY,firstVerticeZ]
+          ])
+        object3dFaceList.push([
+          faceVerticeArr[0], faceVerticeArr[1], [1,secondVerticeY,2], [1,secondVerticeY,0]
+          ])
         totalObj3dList.push({object3dFaceList, normal: cubeFaceData.vn});
-
-        obj3D.push(getVerticeObjFormatLine([1,firstVerticeY,0], scaleObj));
-        verticeGlobalIndex++;
-        faceVerticesIndexList.push(verticeGlobalIndex);
-        obj3D.push(getVerticeObjFormatLine([1,firstVerticeY,2], scaleObj));
-        verticeGlobalIndex++;
-        faceVerticesIndexList.push(verticeGlobalIndex);
-        obj3D.push(getVerticeObjFormatLine(faceVerticeArr[2], scaleObj));
-        verticeGlobalIndex++;
-        faceVerticesIndexList.push(verticeGlobalIndex);
-        obj3D.push(getVerticeObjFormatLine(faceVerticeArr[3], scaleObj));
-        verticeGlobalIndex++;
-        faceVerticesIndexList.push(verticeGlobalIndex);
-        facesObjList.push({faceVerticesIndexList})
-        faceVerticesIndexList = [];
-
-        obj3D.push(getVerticeObjFormatLine([1,secondVerticeY,firstVerticeZ], scaleObj));
-        verticeGlobalIndex++;
-        faceVerticesIndexList.push(verticeGlobalIndex);
-        obj3D.push(getVerticeObjFormatLine([1,secondVerticeY,2], scaleObj));
-        verticeGlobalIndex++;
-        faceVerticesIndexList.push(verticeGlobalIndex);
-        obj3D.push(getVerticeObjFormatLine([1,firstVerticeY,2], scaleObj));
-        verticeGlobalIndex++;
-        faceVerticesIndexList.push(verticeGlobalIndex);
-        obj3D.push(getVerticeObjFormatLine([1,firstVerticeY,firstVerticeZ], scaleObj));
-        verticeGlobalIndex++;
-        faceVerticesIndexList.push(verticeGlobalIndex);
-        facesObjList.push({faceVerticesIndexList})
-        faceVerticesIndexList = [];
-
-        obj3D.push(getVerticeObjFormatLine(faceVerticeArr[0], scaleObj));
-        verticeGlobalIndex++;
-        faceVerticesIndexList.push(verticeGlobalIndex);
-        obj3D.push(getVerticeObjFormatLine(faceVerticeArr[1], scaleObj));
-        verticeGlobalIndex++;
-        faceVerticesIndexList.push(verticeGlobalIndex);
-        obj3D.push(getVerticeObjFormatLine([1,secondVerticeY,2], scaleObj));
-        verticeGlobalIndex++;
-        faceVerticesIndexList.push(verticeGlobalIndex);
-        obj3D.push(getVerticeObjFormatLine([1,secondVerticeY,0], scaleObj));
-        verticeGlobalIndex++;
-        faceVerticesIndexList.push(verticeGlobalIndex);
-        facesObjList.push({faceVerticesIndexList})
-        faceVerticesIndexList = [];
-
-        obj3D.push(["vn", ...cubeFaceData.vn].join(" ").trim());
-        obj3D.push("usemtl Material."+(faceIndex+1));
-        obj3D.push("s off");
-
-        facesObjList.forEach(faceObj => {
-          obj3D.push([
-            "f",
-            ...faceObj.faceVerticesIndexList.map((verticeIndex) => verticeIndex + "//" + (faceIndex+1))
-          ].join(" ").trim());
-        })
 
         return;
       }
     }
 
-    faceVerticeArr.forEach((faceVertice) => {
-
-      verticeGlobalIndex++;
-      faceVerticesIndexList.push(verticeGlobalIndex);
-      obj3D.push(getVerticeObjFormatLine(faceVertice, scaleObj));
-
-    })
-    obj3D.push(["vn", ...cubeFaceData.vn].join(" ").trim());
-
-    obj3D.push("usemtl Material."+(faceIndex+1));
-    obj3D.push("s off");
-
-    obj3D.push([
-      "f",
-      ...faceVerticesIndexList.map((verticeIndex) => verticeIndex + "//" + (faceIndex+1))
-    ].join(" ").trim());
+    totalObj3dList.push({object3dFaceList: [faceVerticeArr], normal:cubeFaceData.vn})
 
   })
 
-  return obj3D;
+  return get3dModelInObjFormat(totalObj3dList, scaleObj);
 }
