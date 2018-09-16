@@ -1,0 +1,18 @@
+export const shapeInWallMatch = {
+  0: (room, currentShape) => (room.x +room.width +room.strokeWidth/2 === currentShape.x
+                               && currentShape.y > room.y
+                               && currentShape.y < room.y + room.height
+                             ),
+  1: (room, currentShape) => (room.y +room.height - room.strokeWidth/2 === currentShape.y
+    && currentShape.x > room.x
+    && currentShape.x < room.x + room.width
+  ),
+  2: (room, currentShape) => (room.x + room.strokeWidth/2 === currentShape.x
+    && currentShape.y > room.y
+    && currentShape.y < room.y + room.height
+  ),
+  3: (room, currentShape) => (room.y - room.strokeWidth/2 === currentShape.y
+    && currentShape.x > room.x
+    && currentShape.x < room.x + room.width
+  ),
+}
