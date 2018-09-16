@@ -55,11 +55,12 @@ const get3dModelInObjFormat = (totalObj3dList, scaleObj) => {
 
   const obj3D = [];
   obj3D.push("cube.mtl");
+  console.log(totalObj3dList)
   totalObj3dList.forEach(({ object3dFaceList, normal, material }, index) => {
     const faceVerticesIndexList = [];
 
     obj3D.push("o Cube." + (index+1));
-
+    console.log(object3dFaceList)
     object3dFaceList.forEach(faceVertices => {
       faceVertices.forEach(vertice => {
 
@@ -79,7 +80,7 @@ const get3dModelInObjFormat = (totalObj3dList, scaleObj) => {
     }
 
     obj3D.push("s off");
-
+console.log(object3dFaceList)
     object3dFaceList.forEach((faceVertices, step) => {
       obj3D.push([
         "f",
@@ -191,7 +192,7 @@ const getReformModelList = (shapeArr, wallIndex, room, scaleZ, initialPlaneVerti
       const firstVertice2 = getShapeFirstVertice2(room, shapeArr[0])
 
       object3dFaceList2.push([
-        [-1,firstVertice2,2], [-1,firstVertice2,0], initialPlaneVerticeList[1], initialPlaneVerticeList[0]
+        [-1,firstVertice2,0], [-1,firstVertice2,2], initialPlaneVerticeList[2], initialPlaneVerticeList[3]
       ] )
       shapeArr.forEach((shape, index) => {
 
@@ -218,16 +219,16 @@ const getReformModelList = (shapeArr, wallIndex, room, scaleZ, initialPlaneVerti
         }
 
         object3dFaceList2.push([
-          [-1,secondVertice,2], [-1,secondVertice,verticeZ], [-1,firstVertice,verticeZ], [-1,firstVertice,2]
+          [-1,secondVertice,verticeZ], [-1,secondVertice,2], [-1,firstVertice,2], [-1,firstVertice,verticeZ]
         ])
 
       })
 
       const secondVertice2 = getShapeSecondVertice2(room, shapeArr[shapeArr.length-1]);
-      object3dFaceList.push([
-        initialPlaneVerticeList[0], initialPlaneVerticeList[1], [1,secondVertice2,2], [1,secondVertice2,0]
+      object3dFaceList2.push([
+        initialPlaneVerticeList[0], initialPlaneVerticeList[1], [-1,secondVertice2,2], [-1,secondVertice2,0]
       ])
-      resultModelList.push({object3dFaceList2, normal});
+      resultModelList.push({object3dFaceList: object3dFaceList2, normal});
 
       shapeArr.forEach((shape) => {
         if (shape.type === shapeType.WINDOW) {
@@ -293,6 +294,6 @@ export const createCubeInObjFormat = (scaleX, scaleY, scaleZ, rectanglesData) =>
     totalObj3dList.push({object3dFaceList: [faceVerticeArr], normal:cubeFaceData.vn})
 
   })
-
+console.log(totalObj3dList)
   return get3dModelInObjFormat(totalObj3dList, scaleObj);
 }
