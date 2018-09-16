@@ -1,3 +1,5 @@
+import {shapeType} from "./constants/shapeType";
+
 export const rectanglesData = {
 room: {
   x: 200,
@@ -6,7 +8,8 @@ room: {
   height: 300,
   strokeColor: "blue",
   strokeWidth: 20,
-  name: 'room'
+  name: 'room',
+  type: shapeType.ROOM,
 },
 window1: {
   x: 10,
@@ -14,7 +17,8 @@ window1: {
   width: 150,
   height: 20,
   fill: 'green',
-  name: 'window1'
+  name: 'window1',
+  type: shapeType.WINDOW,
 },
 window2: {
   x: 10,
@@ -22,7 +26,8 @@ window2: {
   width: 150,
   height: 20,
   fill: 'green',
-  name: 'window2'
+  name: 'window2',
+  type: shapeType.WINDOW,
 },
 door1: {
   x: 10,
@@ -30,6 +35,7 @@ door1: {
   width: 90,
   height: 20,
   fill: 'red',
-  name: 'door1'
+  name: 'door1',
+  type: shapeType.DOOR,
 }
 };

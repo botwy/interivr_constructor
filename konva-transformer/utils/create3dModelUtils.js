@@ -1,5 +1,6 @@
 import {cubeFacesScheme} from "../constants/cubeScheme";
 import {cubeFoorVerticalDoorFacesScheme} from "../constants/cubeForDoorScheme";
+import {shapeType} from "../constants/shapeType";
 
 export const create3dModel = (shapeList = [], roomHeight) => {
   let new3dModel = {};
@@ -86,10 +87,50 @@ const get3dModelInObjFormat = (totalObj3dList, scaleObj) => {
   })
  return obj3D;
 }
+const getModelListForDoor = (room, renderDoor, scaleZ, initialPlaneVerticeList, normal) => {
+  const resultModelList = [];
 
+  const differenceFromBasicY = (room.y - renderDoor.y)/(room.height*0.5);
+  const firstVerticeY = 1 + differenceFromBasicY;
+  const secondVerticeY = 1 + (room.y - renderDoor.y - renderDoor.width)/(room.height*0.5);
+  const firstVerticeZ = 2/(scaleZ*0.5);
+
+  const object3dFaceList = [];
+  object3dFaceList.push([
+    [1,firstVerticeY,0], [1,firstVerticeY,2], initialPlaneVerticeList[2], initialPlaneVerticeList[3]
+  ] )
+  object3dFaceList.push([
+    [1,secondVerticeY,firstVerticeZ], [1,secondVerticeY,2], [1,firstVerticeY,2], [1,firstVerticeY,firstVerticeZ]
+  ])
+  object3dFaceList.push([
+    initialPlaneVerticeList[0], initialPlaneVerticeList[1], [1,secondVerticeY,2], [1,secondVerticeY,0]
+  ])
+  resultModelList.push({object3dFaceList, normal});
+
+  cubeFoorVerticalDoorFacesScheme.forEach(currentObj3d => {
+    const object3dFace = currentObj3d.f.map(verticeVector => ([
+      verticeVector[0],
+      1+differenceFromBasicY+verticeVector[1]*renderDoor.width/(room.height*0.5),
+      verticeVector[2]*firstVerticeZ,
+    ]));
+    resultModelList.push({object3dFaceList: [object3dFace], normal: currentObj3d.vn, material: currentObj3d.mtl});
+  })
+
+  return resultModelList;
+}
+
+getReformModelList = (shapeArr, room, scaleZ, initialPlaneVerticeList, normal) => {
+  shapeArr.forEach((shape, index) => {
+    if (index === 0) {
+      
+    }
+  })
+}
 export const createCubeInObjFormat = (scaleX, scaleY, scaleZ, rectanglesData) => {
   const scaleObj = { scaleX, scaleY, scaleZ };
   const totalObj3dList = [];
+  const room = rectanglesData.room;
+  const roomX = room.x +room.width +room.strokeWidth/2;
 
   cubeFacesScheme.forEach((cubeFaceData, faceIndex) => {
 
@@ -97,34 +138,26 @@ export const createCubeInObjFormat = (scaleX, scaleY, scaleZ, rectanglesData) =>
     faceVerticeArr.reverse();
 
     if (faceIndex === 2) {
+      const shapeArr = [];
+      Object.keys(rectanglesData).forEach(key => {
+        const currentShape = rectanglesData[key];
+        if ([shapeType.DOOR, shapeType.WINDOW].includes(currentShape.type) &&
+          roomX === currentShape.x && currentShape.y > room.y && currentShape.y < room.y + room.height
+        ) {
+          shapeArr.push(currentShape);
+        }
+      })
+      shapeArr.sort((shape, shapeNext) => {
+        if (shape.y < shapeNext.y) return -1;
+        if (shape.y > shapeNext.y) return 1;
+        return 0;
+      })
+      console.log(shapeArr)
+
       const renderDoor = rectanglesData.door1;
-      const room = rectanglesData.room;
-      const roomX = room.x +room.width +room.strokeWidth/2;
 
       if (roomX === renderDoor.x && renderDoor.y > room.y && renderDoor.y < room.y + room.height) {
-        const differenceFromBasicY = (room.y - renderDoor.y)/(room.height*0.5);
-        const firstVerticeY = 1 + differenceFromBasicY;
-        const secondVerticeY = 1 + (room.y - renderDoor.y - renderDoor.width)/(room.height*0.5);
-        const firstVerticeZ = 200/150;
-
-        const object3dFaceList = [];
-        object3dFaceList.push([
-          [1,firstVerticeY,0], [1,firstVerticeY,2], faceVerticeArr[2], faceVerticeArr[3]
-        ] )
-        object3dFaceList.push([
-          [1,secondVerticeY,firstVerticeZ], [1,secondVerticeY,2], [1,firstVerticeY,2], [1,firstVerticeY,firstVerticeZ]
-          ])
-        object3dFaceList.push([
-          faceVerticeArr[0], faceVerticeArr[1], [1,secondVerticeY,2], [1,secondVerticeY,0]
-          ])
-        totalObj3dList.push({object3dFaceList, normal: cubeFaceData.vn});
-
-        cubeFoorVerticalDoorFacesScheme.forEach(currentObj3d => {
-          const object3dFaceList = currentObj3d.f
-            .map(verticeVector => [verticeVector[0], verticeVector[1]+differenceFromBasicY,verticeVector[2]]);
-          totalObj3dList.push({object3dFaceList, normal: currentObj3d.vn, material: currentObj3d.mtl});
-        })
-
+        totalObj3dList.push(...getModelListForDoor(room, renderDoor, scaleZ, faceVerticeArr, cubeFaceData.vn));
         return;
       }
     }
