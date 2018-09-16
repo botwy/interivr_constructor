@@ -2,6 +2,10 @@ import {cubeFacesScheme} from "../constants/cubeScheme";
 import {cubeFoorVerticalDoorFacesScheme} from "../constants/cubeForDoorScheme";
 import {shapeType} from "../constants/shapeType";
 
+const DOOR_HEIGHT = 2;
+const WINDOW_HEIGHT = 1.5;
+const WINDOW_STEP_FROM_FLOOR = 0.8;
+
 export const create3dModel = (shapeList = [], roomHeight) => {
   let new3dModel = {};
   shapeList.forEach(shape => {
@@ -87,46 +91,19 @@ const get3dModelInObjFormat = (totalObj3dList, scaleObj) => {
   })
  return obj3D;
 }
-const getModelListForDoor = (room, renderDoor, scaleZ, initialPlaneVerticeList, normal) => {
-  const resultModelList = [];
-
-  const differenceFromBasicY = (room.y - renderDoor.y)/(room.height*0.5);
-  const firstVerticeY = 1 + differenceFromBasicY;
-  const secondVerticeY = 1 + (room.y - renderDoor.y - renderDoor.width)/(room.height*0.5);
-  const firstVerticeZ = 2/(scaleZ*0.5);
-
-  const object3dFaceList = [];
-  object3dFaceList.push([
-    [1,firstVerticeY,0], [1,firstVerticeY,2], initialPlaneVerticeList[2], initialPlaneVerticeList[3]
-  ] )
-  object3dFaceList.push([
-    [1,secondVerticeY,firstVerticeZ], [1,secondVerticeY,2], [1,firstVerticeY,2], [1,firstVerticeY,firstVerticeZ]
-  ])
-  object3dFaceList.push([
-    initialPlaneVerticeList[0], initialPlaneVerticeList[1], [1,secondVerticeY,2], [1,secondVerticeY,0]
-  ])
-  resultModelList.push({object3dFaceList, normal});
-
-  cubeFoorVerticalDoorFacesScheme.forEach(currentObj3d => {
-    const object3dFace = currentObj3d.f.map(verticeVector => ([
-      verticeVector[0],
-      1+differenceFromBasicY+verticeVector[1]*renderDoor.width/(room.height*0.5),
-      verticeVector[2]*firstVerticeZ,
-    ]));
-    resultModelList.push({object3dFaceList: [object3dFace], normal: currentObj3d.vn, material: currentObj3d.mtl});
-  })
-
-  return resultModelList;
-}
 
 const getShapeFirstVertice = (room, shape) => {
   const k = 1/(room.height*0.5);
   const differenceFromBasicAxis = (room.y - shape.y)*k;
   return 1 + differenceFromBasicAxis;
 }
-const getShapeSecondVertice = (room, shape) => 1 + (room.y - shape[0].y - shape[0].width)/(room.height*0.5);
+const getShapeSecondVertice = (room, shape) => 1 + (room.y - shape.y - shape.width)/(room.height*0.5);
 
 const getDoorVerticeZ = (roomHeight, doorHeight) => doorHeight/(roomHeight*0.5);
+
+const getWindowFirstZ = (roomHeight, windowStepFromFloor) => windowStepFromFloor/(roomHeight*0.5);
+
+const getWindowSecondZ = (roomHeight, windowStepFromFloor, windowHeight) => (windowStepFromFloor+windowHeight)/(roomHeight*0.5);
 
 const getReformModelList = (shapeArr, wallIndex, room, scaleZ, initialPlaneVerticeList, normal) => {
   const resultModelList = [];
@@ -143,16 +120,28 @@ const getReformModelList = (shapeArr, wallIndex, room, scaleZ, initialPlaneVerti
 
         const firstVertice = getShapeFirstVertice(room, shape);
         const secondVertice = getShapeSecondVertice(room, shape);
-        const verticeZ = getDoorVerticeZ(scaleZ, 2);
+        const verticeZ = getDoorVerticeZ(scaleZ, DOOR_HEIGHT);
+        const windowFirstZ = getWindowFirstZ(scaleZ, WINDOW_STEP_FROM_FLOOR);
+        const windowSecondZ = getWindowSecondZ(scaleZ,WINDOW_STEP_FROM_FLOOR, WINDOW_HEIGHT);
 
         if (index > 0) {
           const prevShapeSecondVertice = getShapeSecondVertice(room, shapeArr[index-1]);
           object3dFaceList.push([
-            [1,firstVertice,0], [1,firstVertice,2], [1,prevShapeSecondVertice,2], [1,prevShapeSecondVertice,2]
+            [1,firstVertice,0], [1,firstVertice,2], [1,prevShapeSecondVertice,2], [1,prevShapeSecondVertice,0]
           ] )
         }
+        if (shape.type === shapeType.WINDOW) {
+          object3dFaceList.push([
+            [1,secondVertice,0], [1,secondVertice,windowFirstZ], [1,firstVertice,windowFirstZ], [1,firstVertice,0]
+          ])
+          object3dFaceList.push([
+            [1,secondVertice,windowSecondZ], [1,secondVertice,2], [1,firstVertice,2], [1,firstVertice,windowSecondZ]
+          ])
+          return;
+        }
+
         object3dFaceList.push([
-          [1,secondVertice,firstVertice], [1,secondVertice,2], [1,firstVertice,2], [1,firstVertice,verticeZ]
+          [1,secondVertice,verticeZ], [1,secondVertice,2], [1,firstVertice,2], [1,firstVertice,verticeZ]
         ])
 
       })
@@ -164,6 +153,20 @@ const getReformModelList = (shapeArr, wallIndex, room, scaleZ, initialPlaneVerti
       resultModelList.push({object3dFaceList, normal});
 
       shapeArr.forEach((shape) => {
+        if (shape.type === shapeType.WINDOW) {
+          cubeFoorVerticalDoorFacesScheme.forEach(currentObj3d => {
+            const object3dFace = currentObj3d.f.map(verticeVector => ([
+              verticeVector[0],
+              getShapeFirstVertice(room, shape)+verticeVector[1]*shape.width/(room.height*0.5),
+              getWindowFirstZ(scaleZ, WINDOW_STEP_FROM_FLOOR, WINDOW_HEIGHT) + verticeVector[2]*(
+                getWindowSecondZ(scaleZ, WINDOW_STEP_FROM_FLOOR, WINDOW_HEIGHT) - getWindowFirstZ(scaleZ,WINDOW_STEP_FROM_FLOOR)
+              ),
+            ]));
+            resultModelList.push({object3dFaceList: [object3dFace], normal: currentObj3d.vn, material: currentObj3d.mtl});
+          })
+          return;
+        }
+
         cubeFoorVerticalDoorFacesScheme.forEach(currentObj3d => {
           const object3dFace = currentObj3d.f.map(verticeVector => ([
             verticeVector[0],
@@ -178,6 +181,7 @@ const getReformModelList = (shapeArr, wallIndex, room, scaleZ, initialPlaneVerti
   }
 return resultModelList;
 }
+
 export const createCubeInObjFormat = (scaleX, scaleY, scaleZ, rectanglesData) => {
   const scaleObj = { scaleX, scaleY, scaleZ };
   const totalObj3dList = [];
@@ -204,16 +208,10 @@ export const createCubeInObjFormat = (scaleX, scaleY, scaleZ, rectanglesData) =>
         if (shape.y > shapeNext.y) return 1;
         return 0;
       })
-      console.log(shapeArr)
-      totalObj3dList.push(...getReformModelList(shapeArr, 0, scaleZ, faceVerticeArr, cubeFaceData.vn));
+
+      totalObj3dList.push(...getReformModelList(shapeArr, 0, room, scaleZ, faceVerticeArr, cubeFaceData.vn));
       return;
 
-      const renderDoor = rectanglesData.door1;
-
-      if (roomX === renderDoor.x && renderDoor.y > room.y && renderDoor.y < room.y + room.height) {
-        totalObj3dList.push(...getModelListForDoor(room, renderDoor, scaleZ, faceVerticeArr, cubeFaceData.vn));
-        return;
-      }
     }
 
     totalObj3dList.push({object3dFaceList: [faceVerticeArr], normal:cubeFaceData.vn})
