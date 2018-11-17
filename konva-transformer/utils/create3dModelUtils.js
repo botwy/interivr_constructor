@@ -51,13 +51,15 @@ const getVerticeObjFormatLine = (faceVertice, {scaleX, scaleY, scaleZ}) => {
 const get3dModelInObjFormat = (totalObj3dList, scaleObj) => {
 
   let verticeGlobalIndex = 0;
+  let uvGlobalIndex = 0;
   let materialIndex = 1;
 
   const obj3D = [];
   obj3D.push("cube.mtl");
   console.log(totalObj3dList)
-  totalObj3dList.forEach(({ object3dFaceList, normal, material }, index) => {
+  totalObj3dList.forEach(({ object3dFaceList, normal, material, uv }, index) => {
     const faceVerticesIndexList = [];
+    const uvIndexList = [];
 
     obj3D.push("o Cube." + (index+1));
     console.log(object3dFaceList)
@@ -70,6 +72,13 @@ const get3dModelInObjFormat = (totalObj3dList, scaleObj) => {
 
       })
     })
+    if (Array.isArray(uv)) {
+      uv.forEach(uvVertices => {
+          obj3D.push(["vt",...uvVertices].join(" ").trim());
+          uvGlobalIndex++;
+          uvIndexList.push(uvGlobalIndex);
+      })
+    }
 
     obj3D.push(["vn", ...normal].join(" ").trim());
     if (material) {
@@ -87,7 +96,12 @@ console.log(object3dFaceList)
         ...faceVertices
           .map((vertice, index) => (index))
           .map(verticeLocalIndex => (faceVerticesIndexList[verticeLocalIndex + step * faceVertices.length]))
-          .map((verticeIndex) => verticeIndex + "//" + (index+1))
+          .map((verticeIndex, mapIndex) => {
+            if (!uvIndexList.length) {
+                return verticeIndex + "//" + (index+1)
+            }
+            return  verticeIndex + "/" + uvIndexList[mapIndex] + "/" + (index+1)
+          })
       ].join(" ").trim());
     })
   })
@@ -291,7 +305,7 @@ export const createCubeInObjFormat = (scaleX, scaleY, scaleZ, rectanglesData) =>
       }
     }
 
-    totalObj3dList.push({object3dFaceList: [faceVerticeArr], normal:cubeFaceData.vn})
+    totalObj3dList.push({object3dFaceList: [faceVerticeArr], normal:cubeFaceData.vn, uv: cubeFaceData.uv})
 
   })
 console.log(totalObj3dList)
