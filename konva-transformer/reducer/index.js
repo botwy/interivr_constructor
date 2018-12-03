@@ -6,14 +6,17 @@ import {
   HIDE_SHAPE_LABEL,
   TRANSFORMING,
   CHANGE_ROOM_Z,
+  CHANGE_3D_MODEL,
+  TRANSFORM_ROOM,
 } from "../constants";
+import {roomZ} from "../constants/defaultRoom3dModel";
 
 const defaultState = {
   rectanglesData,
   prevRectanglesData: rectanglesData || {},
   selectedShapeName: '',
   label: {},
-  roomZ: 275,
+  roomZ: roomZ*100,
 }
 
 const reducer = (state = defaultState, action) => {
@@ -30,6 +33,33 @@ const reducer = (state = defaultState, action) => {
           ...state.prevRectanglesData,
           [action.rectangleId]: action.newData,
         }
+      }
+
+    case CHANGE_3D_MODEL:
+      return {
+        ...state,
+        rectanglesData: {
+          ...state.rectanglesData,
+          room: {
+            ...state.rectanglesData.room,
+            model3d: action.model3d,
+          },
+        },
+      }
+
+    case TRANSFORM_ROOM:
+      return {
+        ...state,
+        rectanglesData: {
+          ...state.rectanglesData,
+          room: {
+            ...state.rectanglesData.room,
+            model3dLocalPosition: {
+              ...state.rectanglesData.room.model3dLocalPosition,
+              ...action.new3dModel,
+            },
+          },
+        },
       }
 
     case  TRANSFORMING:

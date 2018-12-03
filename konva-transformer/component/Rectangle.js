@@ -1,22 +1,32 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Rect} from 'react-konva';
-import {attractRotation, attractToTargetShape, distanceFromTargetCorner} from "../utils/geometry2dUtils";
+import {attractRotation} from "../utils/geometry2dUtils";
 import {
   transformingActionCreator,
   updateLabelByNewData,
-  updateRectangleByNewData
+  updateRectangleByNewData,
+  rectangleTransformEnd,
 } from "../action";
 
 class Rectangle extends Component {
 
-  getShapeDataByScale = (shape) => ({
-    x: shape.x(),
-    y: shape.y(),
-    width: shape.width() * shape.scaleX(),
-    height: shape.height() * shape.scaleY(),
-    rotation: shape.rotation()
-  })
+  getShapeDataByScale = (shape) => {
+    const {rectangleId, rectangleData: {model3d} = {}, roomZ} = this.props;
+    console.log(shape)
+    const x = shape.x();
+    const y = shape.y();
+    const width = shape.width() * shape.scaleX();
+    const height = shape.height() * shape.scaleY();
+    const rotation = shape.rotation();
+
+    let newModel3d;
+    if (rectangleId === "room") {
+      // newModel3d = getRoom3dModel({x, y, width, height, model3d}, roomZ);
+    }
+
+    return ({x, y, width, height, rotation, model3d: newModel3d});
+  }
 
   handleRectDragMove = (e) => {
     const shape = e.target;
@@ -39,7 +49,7 @@ class Rectangle extends Component {
   };
 
   handleRectTransforming = (e) => {
-    const {rectangleData = {}} = this.props;
+    const {rectangleData = {}, rectangleId} = this.props;
     const shape = e.target;
     const changedData = this.getShapeDataByScale(shape);
 
@@ -47,7 +57,12 @@ class Rectangle extends Component {
   };
 
   handleRectTransformEnd = (e) => {
-    const {rectangleData = {}, prevRectangleData = {}, changeRectangleDataExecute} = this.props;
+    const {
+      rectangleData = {},
+      prevRectangleData = {},
+      changeRectangleDataExecute,
+      rectangleTransformEnd,
+    } = this.props;
     const shape = e.target;
     const changedData = this.getShapeDataByScale(shape);
 
@@ -56,10 +71,12 @@ class Rectangle extends Component {
       prevRectangleData
     );
     if (!changingRotation) {
+      rectangleTransformEnd();
       return;
     }
 
     changeRectangleDataExecute({...rectangleData, ...changedData, ...changingRotation});
+    rectangleTransformEnd();
   };
 
   render() {
@@ -95,8 +112,10 @@ export default connect(
   (store, {rectangleId}) => ({
     rectangleData: store.rectanglesData[rectangleId],
     prevRectangleData: store.prevRectanglesData[rectangleId],
+    roomZ: store.roomZ,
   }),
   (dispatch, {rectangleId}) => ({
+    rectangleTransformEnd: () => dispatch(rectangleTransformEnd(rectangleId)),
     changeRectangleDataExecute: (rectangleData, changedData) =>
       dispatch(updateRectangleByNewData(rectangleData, changedData, rectangleId)),
     transformingRectangle: (newData) => dispatch(transformingActionCreator(newData, rectangleId)),

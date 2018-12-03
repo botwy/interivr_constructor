@@ -1,15 +1,20 @@
-import {shapeType} from "./constants/shapeType";
+import {SHAPE_TYPE} from "./constants/shapeType";
+import {defaultRoom3dModel} from "./constants/defaultRoom3dModel";
+import {defaultLocalPosition, initRoomHeight, initRoomWidth} from "./constants/defaultLocalPositionsForVertices";
 
 export const rectanglesData = {
 room: {
   x: 200,
   y: 80,
-  width: 300,
-  height: 300,
+  width: initRoomWidth,
+  height: initRoomHeight,
   strokeColor: "blue",
   strokeWidth: 20,
   name: 'room',
-  type: shapeType.ROOM,
+  type: SHAPE_TYPE.ROOM,
+  model3d: defaultRoom3dModel,
+  model3dLocalPosition: defaultLocalPosition,
+  model3dInitData: defaultLocalPosition,
 },
 window1: {
   x: 10,
@@ -18,7 +23,7 @@ window1: {
   height: 20,
   fill: 'green',
   name: 'window1',
-  type: shapeType.WINDOW,
+  type: SHAPE_TYPE.WINDOW,
 },
 window2: {
   x: 10,
@@ -27,7 +32,7 @@ window2: {
   height: 20,
   fill: 'green',
   name: 'window2',
-  type: shapeType.WINDOW,
+  type: SHAPE_TYPE.WINDOW,
 },
 door1: {
   x: 10,
@@ -36,6 +41,6 @@ door1: {
   height: 20,
   fill: 'red',
   name: 'door1',
-  type: shapeType.DOOR,
+  type: SHAPE_TYPE.DOOR,
 }
 };
