@@ -1,3 +1,4 @@
+import {handleActions, combineActions} from "redux-actions";
 import {rectanglesData} from "../defaultRectanglesData";
 import {
   CHANGE_EXECUTE,
@@ -9,133 +10,97 @@ import {
   CHANGE_3D_MODEL,
   TRANSFORM_ROOM,
 } from "../constants";
+import {SHAPE_TYPE} from "../constants/shapeType";
 import {roomZ} from "../constants/defaultRoom3dModel";
+import {rectanglesDataHandleActions} from "./rectanglesDataReducer";
+import {prevRectanglesDataHandleActions} from "./prevRectanglesDataReducer";
+import {labelHandleActions} from "./labelReducer";
+import get from "lodash/get";
 
-const defaultState = {
+export const defaultState = {
   rectanglesData,
   prevRectanglesData: rectanglesData || {},
   selectedShapeName: '',
   label: {},
   roomZ: roomZ*100,
 }
+const reducer = handleActions({
 
-const reducer = (state = defaultState, action) => {
-  switch (action.type) {
+  [CHANGE_EXECUTE]: (state, action) => ({
+    ...state,
+    rectanglesData: rectanglesDataHandleActions(state.rectanglesData, action),
+    prevRectanglesData: prevRectanglesDataHandleActions(state.prevRectanglesData, action),
+  }),
 
-    case CHANGE_EXECUTE:
+  [combineActions(
+    CHANGE_3D_MODEL,
+    TRANSFORM_ROOM
+  )]: (state, action) => ({
+    ...state,
+    rectanglesData: rectanglesDataHandleActions(state.rectanglesData, action),
+  }),
+
+  [TRANSFORMING]: (state, action) => {
+    if (action.rectangleId === SHAPE_TYPE) {
+      const firstValue = get(state, `rectanglesData.room.width`,0);
+
       return {
         ...state,
-        rectanglesData: {
-          ...state.rectanglesData,
-          [action.rectangleId]: action.newData,
-        },
-        prevRectanglesData: {
-          ...state.prevRectanglesData,
-          [action.rectangleId]: action.newData,
-        }
-      }
-
-    case CHANGE_3D_MODEL:
-      return {
-        ...state,
-        rectanglesData: {
-          ...state.rectanglesData,
-          room: {
-            ...state.rectanglesData.room,
-            model3d: action.model3d,
-          },
-        },
-      }
-
-    case TRANSFORM_ROOM:
-      return {
-        ...state,
-        rectanglesData: {
-          ...state.rectanglesData,
-          room: {
-            ...state.rectanglesData.room,
-            model3dLocalPosition: {
-              ...state.rectanglesData.room.model3dLocalPosition,
-              ...action.new3dModel,
-            },
-          },
-        },
-      }
-
-    case  TRANSFORMING:
-      if (action.rectangleId === "room") {
-        return {
-          ...state,
-          rectanglesData: {
-            ...state.rectanglesData,
-            [action.rectangleId]: action.newData,
-          },
-          label: {
-            topForRoom: {
-              ...state.label.topForRoom,
-              firstValue: ((state.rectanglesData.room||{}).width||0).toFixed(0),
-            },
-          },
-        }
-      }
-      return {
-        ...state,
-        rectanglesData: {
-          ...state.rectanglesData,
-          [action.rectangleId]: action.newData,
-        },
-      }
-    case  SHOW_SHAPE_LABEL:
-      return {
-        ...state,
+        rectanglesData: rectanglesDataHandleActions(state.rectanglesData, action),
         label: {
-          ...state.label,
-          [action.labelGroup]: {
-            ...state.label[action.labelGroup],
-            isLabelVisible: true,
-            firstValue: action.firstValue,
-            secondValue: action.secondValue,
+          topForRoom: {
+            ...state.label.topForRoom,
+            firstValue: Number(firstValue).toFixed(0),
           },
         },
       }
-    case  HIDE_SHAPE_LABEL:
+    }
+
+    return {
+      ...state,
+      rectanglesData: rectanglesDataHandleActions(state.rectanglesData, action),
+    }
+  },
+
+  [combineActions(
+    SHOW_SHAPE_LABEL,
+    HIDE_SHAPE_LABEL
+  )]: (state, action) => ({
+    ...state,
+    label: labelHandleActions(state.label, action),
+  }),
+
+  [SELECT_SHAPE]: (state, action) => {
+    if (state.selectedShapeName === action.shapeName) {
+      return state;
+    }
+    if (action.shapeName === SHAPE_TYPE.ROOM) {
+      const firstValue = get(state, `rectanglesData.room.width`,0);
+
       return {
         ...state,
+        selectedShapeName: action.shapeName,
+        label: {
+          topForRoom: {
+            isLabelVisible: true,
+            firstValue: Number(firstValue).toFixed(0),
+          },
+        },
+      }
+    } else {
+      return {
+        ...state,
+        selectedShapeName: action.shapeName,
         label: {},
       }
+    }
 
-    case  SELECT_SHAPE:
-      if (state.selectedShapeName === action.shapeName) {
-        return state;
-      }
-      if (action.shapeName === "room") {
-        return {
-          ...state,
-          selectedShapeName: action.shapeName,
-          label: {
-            topForRoom: {
-              isLabelVisible: true,
-              firstValue: ((state.rectanglesData.room||{}).width||0).toFixed(0),
-            },
-          },
-        }
-      } else {
-        return {
-          ...state,
-          selectedShapeName: action.shapeName,
-          label: {},
-        }
-      }
+  },
+  [CHANGE_ROOM_Z]: (state, action) => ({
+    ...state,
+    roomZ: action.z,
+  }),
 
-    case CHANGE_ROOM_Z:
-      return {
-        ...state,
-        roomZ: action.z,
-      }
-
-    default:
-      return state;
-  }
-}
+}, defaultState)
 
 export default reducer;
