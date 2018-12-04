@@ -10,17 +10,17 @@ import {
   TRANSFORM_ROOM,
 } from "../constants";
 import axios from "axios";
-import {createCubeInObjFormat, get3dModelInObjFormat} from "../utils/create3dModelUtils";
-import {getRoom3dModelAfterAttractShape, scaleVerticesMatrixForX, scaleVerticesMatrixForY} from "../utils/geometry3dUtils";
+import {get3dModelInObjFormat} from "../utils/create3dModelUtils";
+import {getRoom3dModelAfterAttractShape, scaleVerticesMatrixForX} from "../utils/geometry3dUtils";
 import {initRoomWidth, initRoomHeight} from "../constants/defaultLocalPositionsForVertices";
-import {attractRotation, attractToTargetShape, distanceFromTargetCorner} from "../utils/geometry2dUtils";
+import {attractToTargetShape, distanceFromTargetCorner} from "../utils/geometry2dUtils";
 import {SHAPE_TYPE} from "../constants/shapeType";
 
 const rectangleChangeActionCreator = (newData, rectangleId) => ({
-    type: CHANGE_EXECUTE,
-    newData,
-    rectangleId,
-  }
+  type: CHANGE_EXECUTE,
+  newData,
+  rectangleId,
+}
 )
 
 const change3dModelAfterAttractShape = (shapeData) => (dispatch, getState) => {
@@ -28,25 +28,23 @@ const change3dModelAfterAttractShape = (shapeData) => (dispatch, getState) => {
   const roomData = getState().rectanglesData.room;
   const roomZ = getState().roomZ;
   const newModel3d = getRoom3dModelAfterAttractShape(shapeData, roomZ, roomData);
-console.log(shapeData)
-console.log(prevModel3d)
   dispatch ({
-      type: CHANGE_3D_MODEL,
-      model3d: newModel3d,
-    });
+    type: CHANGE_3D_MODEL,
+    model3d: newModel3d,
+  });
 }
 
 export const transformingActionCreator = (newData, rectangleId) => ({
-    type: TRANSFORMING,
-    newData,
-    rectangleId,
-  }
+  type: TRANSFORMING,
+  newData,
+  rectangleId,
+}
 )
 
 export const selectShapeActionCreator = (shapeName) => ({
-    type: SELECT_SHAPE,
-    shapeName,
-  }
+  type: SELECT_SHAPE,
+  shapeName,
+}
 )
 
 export const changeRoomZ = (z) => ({

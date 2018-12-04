@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server",
     "eslint-init": "./node_modules/.bin/eslint --init",
-    "eslint-check": "./node_modules/.bin/eslint konva-transformer/"
+    "eslint-check": "./node_modules/.bin/eslint konva-transformer/",
+    "eslint-fix": "./node_modules/.bin/eslint konva-transformer/ --fix"
   },
   "author": "Goncharov Denis",
   "license": "MIT",

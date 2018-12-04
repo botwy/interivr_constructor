@@ -47,9 +47,9 @@ export const get3dModelInObjFormat = (totalObj3dList, scaleObj) => {
     })
     if (Array.isArray(uv)) {
       uv.forEach(uvVertices => {
-          obj3D.push(["vt",...uvVertices].join(" ").trim());
-          uvGlobalIndex++;
-          uvIndexList.push(uvGlobalIndex);
+        obj3D.push(["vt",...uvVertices].join(" ").trim());
+        uvGlobalIndex++;
+        uvIndexList.push(uvGlobalIndex);
       })
     }
 
@@ -70,12 +70,12 @@ export const get3dModelInObjFormat = (totalObj3dList, scaleObj) => {
           .map(verticeLocalIndex => (faceVerticesIndexList[verticeLocalIndex + step * faceVertices.length]))
           .map((verticeIndex, mapIndex) => {
             if (!uvIndexList.length) {
-                return verticeIndex + "//" + (index+1)
+              return verticeIndex + "//" + (index+1)
             }
             return  verticeIndex + "/" + uvIndexList[mapIndex] + "/" + (index+1)
           })
       ].join(" ").trim());
     })
   })
- return obj3D;
+  return obj3D;
 }

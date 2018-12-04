@@ -1,21 +1,21 @@
 const getRoomFloor = ({x, y, width, height}, centerOffsetX, centerOffsetY) => {
-return (
-  {
-    f:[
-      [x + width + centerOffsetX, -y + centerOffsetY, 0],
-      [x + centerOffsetX, -y + centerOffsetY, 0],
-      [x + centerOffsetX, -y - height + centerOffsetY, 0],
-      [x + width + centerOffsetX, -y - height + centerOffsetY, 0],
-    ],
-    uv:[
-      [0, 1],
-      [1, 1],
-      [1, 0],
-      [0, 0],
-    ],
-    vn:[0,0,1]
-  }
-);
+  return (
+    {
+      f:[
+        [x + width + centerOffsetX, -y + centerOffsetY, 0],
+        [x + centerOffsetX, -y + centerOffsetY, 0],
+        [x + centerOffsetX, -y - height + centerOffsetY, 0],
+        [x + width + centerOffsetX, -y - height + centerOffsetY, 0],
+      ],
+      uv:[
+        [0, 1],
+        [1, 1],
+        [1, 0],
+        [0, 0],
+      ],
+      vn:[0,0,1]
+    }
+  );
 }
 
 const getRoomCeiling = ({x, y, width, height}, centerOffsetX, centerOffsetY) => {
@@ -141,25 +141,25 @@ export const getRoom3dModel = (changedShapeData = {}, roomZ) => {
 const changeRoomWall0 = ({x, y, width, height, roomZ},  {roomDataX, roomDataY, roomDataWidth, roomDataHeight}, centerOffsetX, centerOffsetY) => {
   const shapeZ = 200/100;
   const newFace = [
-      [
-        [roomDataX + roomDataWidth + centerOffsetX, - roomDataY - roomDataHeight + centerOffsetY, 0],
-        [roomDataX + roomDataWidth + centerOffsetX, - roomDataY - roomDataHeight + centerOffsetY, roomZ],
-        [roomDataX + roomDataWidth + centerOffsetX, - y - height/2 - width + centerOffsetY, roomZ],
-        [roomDataX + roomDataWidth + centerOffsetX, - y - height/2 - width + centerOffsetY, 0],
-      ],
-      [
-        [roomDataX + roomDataWidth + centerOffsetX, - y - height/2 - width + centerOffsetY, shapeZ],
-        [roomDataX + roomDataWidth + centerOffsetX, - y - height/2 - width + centerOffsetY, roomZ],
-        [roomDataX + roomDataWidth + centerOffsetX, - y - height/2 + centerOffsetY, roomZ],
-        [roomDataX + roomDataWidth + centerOffsetX, - y - height/2 + centerOffsetY, shapeZ],
-      ],
-      [
-        [roomDataX + roomDataWidth + centerOffsetX, - y - height/2 + centerOffsetY, 0],
-        [roomDataX + roomDataWidth + centerOffsetX, - y - height/2 + centerOffsetY, roomZ],
-        [roomDataX + roomDataWidth + centerOffsetX, - roomDataY + centerOffsetY, roomZ],
-        [roomDataX + roomDataWidth + centerOffsetX, - roomDataY + centerOffsetY, 0],
-      ],
-    ]
+    [
+      [roomDataX + roomDataWidth + centerOffsetX, - roomDataY - roomDataHeight + centerOffsetY, 0],
+      [roomDataX + roomDataWidth + centerOffsetX, - roomDataY - roomDataHeight + centerOffsetY, roomZ],
+      [roomDataX + roomDataWidth + centerOffsetX, - y - height/2 - width + centerOffsetY, roomZ],
+      [roomDataX + roomDataWidth + centerOffsetX, - y - height/2 - width + centerOffsetY, 0],
+    ],
+    [
+      [roomDataX + roomDataWidth + centerOffsetX, - y - height/2 - width + centerOffsetY, shapeZ],
+      [roomDataX + roomDataWidth + centerOffsetX, - y - height/2 - width + centerOffsetY, roomZ],
+      [roomDataX + roomDataWidth + centerOffsetX, - y - height/2 + centerOffsetY, roomZ],
+      [roomDataX + roomDataWidth + centerOffsetX, - y - height/2 + centerOffsetY, shapeZ],
+    ],
+    [
+      [roomDataX + roomDataWidth + centerOffsetX, - y - height/2 + centerOffsetY, 0],
+      [roomDataX + roomDataWidth + centerOffsetX, - y - height/2 + centerOffsetY, roomZ],
+      [roomDataX + roomDataWidth + centerOffsetX, - roomDataY + centerOffsetY, roomZ],
+      [roomDataX + roomDataWidth + centerOffsetX, - roomDataY + centerOffsetY, 0],
+    ],
+  ]
 
   return (
     {
@@ -195,7 +195,7 @@ export const getRoom3dModelAfterAttractShape = (changedShapeData = {}, roomZ, ro
     {roomDataX, roomDataY, roomDataWidth, roomDataHeight},
     centerOffsetX,
     centerOffsetY
-    );
+  );
 
 
   return {...roomData.model3d, wall0: newWall0}
