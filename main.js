@@ -7,6 +7,7 @@ import {composeWithDevTools} from 'redux-devtools-extension';
 import {Provider} from 'react-redux';
 import App from './konva-transformer/AppKonva';
 import reducer from './konva-transformer/reducer';
+
 const store = createStore(
   reducer,
   composeWithDevTools(applyMiddleware(thunk)),
